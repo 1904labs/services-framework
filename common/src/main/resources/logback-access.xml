@@ -1,0 +1,112 @@
+<configuration>
+    <!--<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/Users/mohit/tmp/access.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>access.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+        </rollingPolicy>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator name="rest_eval">
+                <matcher>
+                    <Name>url</Name>
+                    <regex>/*</regex>
+                    <caseSensitive>false</caseSensitive>
+                </matcher>
+                <matcher>
+                    <Name>status</Name>
+                    <regex>500|404</regex>
+                    <caseSensitive>false</caseSensitive>
+                </matcher>
+                <Expression>
+                    url.matches(event.getRequestURL()) &amp;&amp;
+                    status.matches(Integer.toString(event.getStatusCode()))
+                </Expression>
+            </evaluator>
+            <OnMatch>ACCEPT</OnMatch>
+            <OnMismatch>DENY</OnMismatch>
+        </filter>
+
+        <encoder>
+            <pattern>%fullRequest%n%n%fullResponse</pattern>
+        </encoder>
+
+    </appender>
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+             <evaluator name="rest_eval">
+                 <matcher>
+                     <Name>url</Name>
+                     <regex>/*</regex>
+                     <caseSensitive>false</caseSensitive>
+                 </matcher>
+                 <matcher>
+                     <Name>status</Name>
+                     <regex>.*</regex>
+                     <caseSensitive>false</caseSensitive>
+                 </matcher>
+                 <Expression>
+                     url.matches(event.getRequestURL()) &amp;&amp; status.matches(Integer.toString(event.getStatusCode()))
+                 </Expression>
+             </evaluator>
+             <OnMatch>ACCEPT</OnMatch>
+             <OnMismatch>DENY</OnMismatch>
+         </filter>
+        <encoder class="net.logstash.logback.encoder.AccessEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <version/>
+                <message/>
+                <method/>
+                <protocol/>
+                <statusCode/>
+                <pattern>
+                    <pattern>
+                        {
+                        "environment": "development"
+                        }
+                    </pattern>
+                </pattern>
+                <pattern>
+                    <pattern>
+                        {
+                        "custom_constant": "123",
+                        "tags": ["one", "two"],
+                        "remote_ip": "%a",
+                        "status_code": "%s",
+                        "elapsed_time": "%D",
+                        "user_agent": "%i{User-Agent}",
+                        "accept": "%i{Accept}",
+                        "referer": "%i{Referer}",
+                        "session": "%requestCookie{JSESSIONID}"
+                        }
+                    </pattern>
+                </pattern>
+                <nestedField>
+                    <fieldName>@metadata</fieldName>
+                    <providers>
+                        <contentLength/>
+                        <elapsedTime/>
+                        <remoteHost/>
+                        <remoteUser/>
+                    </providers>
+                </nestedField>
+                <nestedField>
+                    <fieldName>@context</fieldName>
+                    <providers>
+                        <requestedUrl/>
+                        <requestedUri/>
+                        <requestHeaders/>
+                        <responseHeaders/>
+                    </providers>
+                </nestedField>
+                <uuid/>
+            </providers>
+        </encoder>
+    </appender>-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.access.PatternLayout">
+            <Pattern>%h %l %u %user %date "%r" %s %b</Pattern>
+        </layout>
+    </appender>
+    <appender-ref ref="STDOUT"/>
+</configuration>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}.%M\(%line\) - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <version/>
+                <message/>
+                <rawMessage/>
+                <logLevel/>
+                <pattern>
+                    <pattern>
+                        {
+                        "environment": "development"
+                        }
+                    </pattern>
+                </pattern>
+                <tags/>
+                <nestedField>
+                    <fieldName>@metadata</fieldName>
+                    <providers>
+                        <logstashMarkers/>
+                        <arguments/>
+                        <mdc/>
+                    </providers>
+                </nestedField>
+                <nestedField>
+                    <fieldName>@context</fieldName>
+                    <providers>
+                        <loggerName/>
+                        <threadName/>
+                        <callerData/>
+                        <context/>
+                        <contextName/>
+                        <stacTrace/>
+                    </providers>
+                </nestedField>
+                <uuid/>
+            </providers>
+        </encoder>
+    </appender>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <!-- @formatter:off -->
+            <pattern>%highlight(%-5level %d{yyyy-MM-dd'T'HH:mm:ss.SSS} [%thread] %logger{36}) %msg%n
+            </pattern>
+            <!-- @formatter:on -->
+        </encoder>
+    </appender>
+    <logger name="io.tsdb.base.shiro." level="DEBUG"/>
+    <logger name="org.reflections.Reflections" level="WARN"/>
+    <logger name="org.apache.zookeeper" level="ERROR"/>
+    <logger name="com.base22" level="INFO"/>
+    <logger name="org.apache.shiro" level="DEBUG"/>
+    <logger name="io.tsdb" level="info"/>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
