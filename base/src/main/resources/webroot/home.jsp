@@ -1,13 +1,4 @@
-<%@ include file="include.jsp" %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <%@ include file="head.jsp" %>
-    <title><%= ServiceInfo.serviceName %> Service</title>
-</head>
-<body>
-<%@ include file="nav_top.jsp" %>
-<div class="container">
+<%@ include file="../container.jsp" %>
         <div class="starter-template">
             <h1>Bootstrap starter template</h1>
             <p class="lead">Hi <shiro:guest>Guest</shiro:guest><shiro:user><shiro:principal/></shiro:user>!

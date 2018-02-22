@@ -1,5 +1,6 @@
 package io.tsdb.nifiadmin.main;
 
+import com.labs1904.nifi.NifiClient;
 import io.tsdb.base.application.ApplicationContext;
 import io.tsdb.base.guice.BaseServletModule;
 import io.tsdb.common.configuration.ConfigurationReader;
@@ -23,7 +24,6 @@ public class Main {
         ConfigurationReader.loadPropertiesFile("configuration.properties");
 
         LOGGER.info(String.format("Starting Jetty Server for '%s'", ServiceInfo.serviceName));
-
         webApp.start();
 
         LOGGER.info("We're done!");

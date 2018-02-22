@@ -6,6 +6,7 @@ import io.tsdb.nifiadmin.providers.SayingProvider;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
 import javax.annotation.security.PermitAll;
+import javax.servlet.RequestDispatcher;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;

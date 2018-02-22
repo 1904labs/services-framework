@@ -1,5 +1,6 @@
 include 'base'
 include 'common'
+include 'common-nifi'
 include 'nifiadmin'
 include 'stats'
-
+include 'nifi-api-client'
