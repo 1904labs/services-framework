@@ -1,8 +1,8 @@
-<%@ include file="../container.jsp" %>
+<%@ include file="container.jsp" %>
         <div class="starter-template">
             <h1>Bootstrap starter template</h1>
             <p class="lead">Hi <shiro:guest>Guest</shiro:guest><shiro:user><shiro:principal/></shiro:user>!
-                ( <shiro:user><a href="<c:url value="/logout"/>">
+                ( <shiro:user><a href="<c:url value="logout"/>">
                     <button class="btn btn-outline-success" type="submit">Log Out</button>
                 </a></shiro:user>
                 <shiro:guest><a href="<c:url value="login.jsp"/>">

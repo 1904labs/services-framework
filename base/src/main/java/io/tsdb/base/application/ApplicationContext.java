@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.EnumSet;
 
 /**
@@ -19,8 +20,6 @@ import java.util.EnumSet;
 public class ApplicationContext extends AbstractApplicationContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
     private BaseServletContextListener servletContextListener;
-    private static final String WEBROOT_INDEX = "/webroot/";
-    private static final String TEMPORARY_ROOT = "file:///Users/jcreasy/code/charter/data-manager/build/install/webroot";
 
     private Server appServer;
     private Server adminServer;
@@ -36,35 +35,40 @@ public class ApplicationContext extends AbstractApplicationContext {
     }
 
     /**
+     * We are using Guice to dnyamically load Filters and JAX-RS endpoints
+     * @param context the ServletContextHandler to configure
+     * @param path    the path for the added Servlets
+     */
+    @Override
+    protected void addDynamicServlets(ServletContextHandler context, String path) {
+        LOGGER.info("Adding Guice Injected Servlets at: {}", path);
+        context.addEventListener(servletContextListener);
+        context.addFilter(GuiceFilter.class, "/*", EnumSet.of(javax.servlet.DispatcherType.REQUEST, javax.servlet.DispatcherType.ASYNC));
+    }
+
+    /**
      * Initializes ({@link BaseServletContextListener} with guice module(s)
      * passed in.
      *
      * @param modules guice module(s)
      */
-    protected void initializeGuice(final Module... modules) {
+    private void initializeGuice(final Module... modules) {
         servletContextListener = new BaseServletContextListener(modules);
     }
 
+    /**
+     * Setup the Application and Admin servers
+     */
     private void setupServer() {
         LOGGER.info("Creating HTTP servers");
         appServer = configureServer(getApplicationPort());
         adminServer = configureServer(getAdminPort());
 
         LOGGER.info("Creating HTTP handlers");
-        appServer.setHandler(getApplicationHandler());
-        adminServer.setHandler(getAdminHandler());
-
-        final ServletContextHandler context = new ServletContextHandler(
-                appServer, "/*", ServletContextHandler.SESSIONS);
-
-        // attach listener who instantiate our injector
-        context.addEventListener(servletContextListener);
-        context.addFilter(GuiceFilter.class, "/*", EnumSet.of(javax.servlet.DispatcherType.REQUEST, javax.servlet.DispatcherType.ASYNC));
-
-        // Since this is a ServletContextHandler we must manually configure JSP support.
         try {
-            enableEmbeddedJspSupport(context, TEMPORARY_ROOT);
-        } catch (IOException e) {
+            appServer.setHandler(getApplicationHandler());
+            adminServer.setHandler(getAdminHandler());
+        } catch (IOException | URISyntaxException e) {
             LOGGER.error(e.getMessage(), e);
         }
     }
@@ -93,7 +97,7 @@ public class ApplicationContext extends AbstractApplicationContext {
     }
 
     /**
-     * Stops current running server(s) - app / admin server instances.
+     * Stops current running server(s) - application / admin server instances.
      */
     @SuppressWarnings("unused")
     public final void stop() {
@@ -101,10 +105,10 @@ public class ApplicationContext extends AbstractApplicationContext {
             try {
                 appServer.stop();
             } catch (Exception ex) {
-                LOGGER.error("Error when stopping app server instance", ex);
+                LOGGER.error("Error when stopping application server instance", ex);
             }
         } else {
-            LOGGER.error("app server instance is NOT running");
+            LOGGER.error("application server instance is NOT running");
         }
 
         if (null != adminServer) {

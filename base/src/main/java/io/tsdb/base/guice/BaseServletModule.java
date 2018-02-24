@@ -26,6 +26,7 @@ public class BaseServletModule extends ServletModule {
                 + "io.tsdb.base.service.responses;"
                 + "io.tsdb.base.service.providers;"
                 + "io.tsdb.base.service.rest;"
+                + "io.tsdb.base.shiro.providers;"
                 + ServiceInfo.endpointPackage + ";" // io.tsdb.$servicename.rest
                 + ServiceInfo.providersPackage + ";"; // io.tsdb.$servicename.providers
 
