@@ -4,10 +4,10 @@ package io.tsdb.stats.main;
  * Created by jcreasy on 2/8/18.
  */
 
-import io.tsdb.base.application.ApplicationContext;
-import io.tsdb.base.guice.BaseServletModule;
-import io.tsdb.common.configuration.ConfigurationReader;
-import io.tsdb.common.configuration.ServiceInfo;
+import io.tsdb.services.framework.base.application.ApplicationContext;
+import io.tsdb.services.framework.base.guice.BaseServletModule;
+import io.tsdb.services.framework.common.configuration.ConfigurationReader;
+import io.tsdb.services.framework.common.configuration.ServiceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

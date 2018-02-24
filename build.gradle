@@ -137,10 +137,6 @@ subprojects {
     }
 */
 
-    jar {
-        baseName = "services-${project.name}"
-    }
-
     task assembleDistBin(dependsOn: assembleBinary, type: Copy) {
         from "${project.buildDir}/install/${project.name}/bin/${project.name}"
         into "${rootProject.buildDir}/install/bin/"
@@ -174,9 +170,9 @@ subprojects {
 */
 }
 
-project(':base') {
+project(':framework-base') {
     dependencies {
-        compile project(':common')
+        compile project(':framework-common')
         compile group: 'org.eclipse.jetty', name: 'jetty-server', version: "${rootProject.ext.jettyVersion}"
         compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: "${rootProject.ext.jettyVersion}"
         compile group: 'org.eclipse.jetty', name: 'apache-jsp', version: "${rootProject.ext.jettyVersion}"
@@ -199,7 +195,7 @@ project(':base') {
     }
 }
 
-project(':common') {
+project(':framework-common') {
     dependencies {
         compile group: 'io.dropwizard.metrics', name: 'metrics-core', version: "${rootProject.ext.dropwizardVersion}"
         compile group: 'io.dropwizard.metrics', name: 'metrics-jvm', version: "${rootProject.ext.dropwizardVersion}"
@@ -223,37 +219,10 @@ project(':common') {
     }
 }
 
-project('common-nifi') {
-    dependencies {
-        compile project(':common')
-        compile project(':nifi-api-client')
-    }
-}
-
-project('nifiadmin') {
-    apply plugin: 'application'
-    mainClassName = "io.tsdb.nifiadmin.main.Main"
-    dependencies {
-        compile project(':base')
-        compile project(':common-nifi')
-    }
-}
-
 project('stats') {
     apply plugin: 'application'
     mainClassName = "io.tsdb.stats.main.Main"
     dependencies {
-        compile project(':base')
-    }
-}
-
-project('nifi-api-client') {
-    dependencies {
-        compile 'io.swagger:swagger-annotations:1.5.8'
-        compile 'com.squareup.okhttp:okhttp:2.7.5'
-        compile 'com.squareup.okhttp:logging-interceptor:2.7.5'
-        compile 'com.google.code.gson:gson:2.6.2'
-        compile 'joda-time:joda-time:2.9.3'
-        testCompile 'junit:junit:4.12'
+        compile project(':framework-base')
     }
 }
