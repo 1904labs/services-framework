@@ -3,7 +3,10 @@ package io.tsdb.nifiadmin.rest;
 import com.google.inject.Inject;
 import com.google.inject.servlet.RequestScoped;
 import io.tsdb.nifiadmin.providers.SayingProvider;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresGuest;
+import org.apache.shiro.subject.Subject;
 
 import javax.annotation.security.PermitAll;
 import javax.servlet.RequestDispatcher;
@@ -26,19 +29,21 @@ public class HelloWorldResource {
     @GET
     @Path("{name}")
     @PermitAll
+    @RequiresGuest
     @Produces(MediaType.APPLICATION_JSON)
-    public String sayAnonHello() {
-        saying.setName("Anonymous");
+    public String sayAnonHello(@PathParam("name") String name) {
+        saying.setName(name);
         return saying.getName();
     }
 
     @GET
-    @Path("/secure/{name}")
+    @Path("/secure")
     @Produces(MediaType.APPLICATION_JSON)
     @PermitAll
     @RequiresAuthentication
-    public String sayHello(@PathParam("name") String name) {
-        saying.setName(name);
+    public String sayHello() {
+        Subject currentUser = SecurityUtils.getSubject();
+        saying.setName(currentUser.getPrincipal().toString());
         return saying.getName();
     }
 }
