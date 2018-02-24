@@ -58,12 +58,13 @@
             <!-- @formatter:on -->
         </encoder>
     </appender>
-    <logger name="io.tsdb.base.shiro." level="DEBUG"/>
+
     <logger name="org.reflections.Reflections" level="WARN"/>
     <logger name="org.apache.zookeeper" level="ERROR"/>
     <logger name="com.base22" level="INFO"/>
+    <logger name="io.tsdb.base" level="INFO"/>
     <logger name="org.apache.shiro" level="DEBUG"/>
-    <logger name="io.tsdb" level="info"/>
+    <logger name="org.eclipse.jetty.servlet" level="INFO"/>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>

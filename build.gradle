@@ -11,9 +11,7 @@ allprojects {
     apply plugin: 'java'
     apply plugin: 'checkstyle'
     apply plugin: 'findbugs'
-    apply plugin: 'maven-publish'
-    apply plugin: 'checkstyle'
-    apply plugin: 'findbugs'
+    apply plugin: 'distribution'
 
     group = 'io.tsdb'
     version = '0.1-SNAPSHOT'
@@ -81,23 +79,6 @@ allprojects {
 
     jar {
     }
-
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    task fatJar(type: Jar) {
-        manifest {
-            attributes 'Implementation-Title': 'Gradle Jar File Example',
-                    'Implementation-Version': version,
-                    'Main-Class': 'com.mkyong.DateUtils'
-        }
-        baseName = project.name + '-all'
-        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-        with jar
-    }
-
 }
 
 task copyJars(type: Copy) {
@@ -110,7 +91,6 @@ task assembleBinary(type: Copy) {
     into "${rootProject.buildDir}/install/bin/"
 }
 
-
 /*
  * Note, do NOT remove the exclude *.properties, we do not want centralstation.properties or other random
  * property files from our code getting deployed in a build.
@@ -119,17 +99,17 @@ task assembleBinary(type: Copy) {
  */
 
 subprojects {
-
+/*
     task assembleDistWebRoot(type: Copy) {
         from "${project.projectDir}/src/main/resources/webroot"
         into "${rootProject.buildDir}/install/webroot/"
     }
 
-    task assembleDistWebRootProjectDir(dependsOn: assembleDistWebRoot, type: Copy) {
+    task assembleDistWebRootProjectDir(type: Copy) {
         from "${project.projectDir}/src/main/resources/webroot/${project.name}"
         into "${rootProject.buildDir}/install/webroot/${project.name}/"
     }
-
+*/
     task assembleDistBin(dependsOn: assembleBinary, type: Copy) {
         from "${project.buildDir}/install/${project.name}/bin/${project.name}"
         into "${rootProject.buildDir}/install/bin/"
@@ -198,6 +178,7 @@ project(':common') {
         compile group: 'io.dropwizard.metrics', name: 'metrics-logback', version: "${rootProject.ext.dropwizardVersion}"
         compile group: 'ch.qos.logback', name: 'logback-classic', version: "${rootProject.ext.logbackVersion}"
         compile group: 'ch.qos.logback', name: 'logback-access', version: "${rootProject.ext.logbackVersion}"
+        compile group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '4.11'
         compile group: 'org.slf4j', name: 'slf4j-api', version: "${rootProject.ext.slf4jVersion}"
         compile group: 'org.slf4j', name: 'jul-to-slf4j', version: "${rootProject.ext.slf4jVersion}"
         compile group: 'com.google.guava', name: 'guava', version: '18.0'
