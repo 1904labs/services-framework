@@ -22,8 +22,8 @@ import java.util.Map;
  * would then throw).
  *
  * @author Adam Lugowski
- * @license https://github.com/inst-tech/metrics-system/blob/master/LICENSE
- * @Source https://github.com/turn/metrics-system
+ * license https://github.com/inst-tech/metrics-system/blob/master/LICENSE
+ * Source https://github.com/turn/metrics-system
  * @see OperatingSystemMXBean
  */
 @SuppressWarnings("unused")

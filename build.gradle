@@ -12,12 +12,15 @@ allprojects {
     apply plugin: 'checkstyle'
     apply plugin: 'findbugs'
     apply plugin: 'distribution'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
-    group = 'io.tsdb'
-    version = '0.1-SNAPSHOT'
+    group = 'io.tsdb.services'
+    version = "0.1.0"
+
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-    description = "boatyui"
+    description = "TSDB.io Services Framework"
 
     configurations {
         providedCompile
@@ -77,7 +80,29 @@ allprojects {
         }
     }
 
-    jar {
+    task sourceJar(type: Jar) {
+        classifier "sources"
+        from sourceSets.main.allJava
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier "javadoc"
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives jar
+        archives sourceJar
+        archives javadocJar
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId jar.baseName
+                from components.java
+            }
+        }
     }
 }
 
@@ -90,6 +115,7 @@ task assembleBinary(type: Copy) {
     from "${rootProject.projectDir}/src/main/dist/run"
     into "${rootProject.buildDir}/install/bin/"
 }
+
 
 /*
  * Note, do NOT remove the exclude *.properties, we do not want centralstation.properties or other random
@@ -110,6 +136,11 @@ subprojects {
         into "${rootProject.buildDir}/install/webroot/${project.name}/"
     }
 */
+
+    jar {
+        baseName = "services-${project.name}"
+    }
+
     task assembleDistBin(dependsOn: assembleBinary, type: Copy) {
         from "${project.buildDir}/install/${project.name}/bin/${project.name}"
         into "${rootProject.buildDir}/install/bin/"

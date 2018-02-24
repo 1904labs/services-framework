@@ -13,8 +13,8 @@ import java.util.Map;
  * A set of gauges for properties exposed by RuntimeMXBean, mainly start time and uptime.
  *
  * @author Adam Lugowski
- * @license https://github.com/inst-tech/metrics-system/blob/master/LICENSE
- * @Source https://github.com/turn/metrics-system
+ * license https://github.com/inst-tech/metrics-system/blob/master/LICENSE
+ * Source https://github.com/turn/metrics-system
  * @see java.lang.management.RuntimeMXBean
  */
 @SuppressWarnings("unused")
