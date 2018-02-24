@@ -33,8 +33,8 @@ import java.util.Map;
  * </p>
  *
  * @author Adam Lugowski
- * @license https://github.com/inst-tech/metrics-system/blob/master/LICENSE
- * @Source https://github.com/turn/metrics-system
+ * License https://github.com/inst-tech/metrics-system/blob/master/LICENSE
+ * Source https://github.com/turn/metrics-system
  */
 @SuppressWarnings("unused")
 public class FileSystemMetricSet implements MetricSet {

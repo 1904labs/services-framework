@@ -111,12 +111,12 @@ public final class ConfigurationReader {
     }
 
     /**
-     * Returns true if {@Link #COMBINED_CONFIGURATION} contains the provided
+     * Returns true if {@link #COMBINED_CONFIGURATION} contains the provided
      * key.
      *
      * @param property
-     *            provided key to look for in {@Link #COMBINED_CONFIGURATION}
-     * @return whether or not {@Link #COMBINED_CONFIGURATION} contains the
+     *            provided key to look for in {@link #COMBINED_CONFIGURATION}
+     * @return whether or not {@link #COMBINED_CONFIGURATION} contains the
      *         provided key
      */
     @SuppressWarnings("WeakerAccess")
