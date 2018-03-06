@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
  * Centralizes metrics, reporters, heatlhchecks and base metricsets
  * @author jcreasy
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Metrics {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Metrics.class);
     private static final DefaultMetricsConfiguration METRICS_CONFIGURATION = new DefaultMetricsConfiguration();
@@ -133,6 +134,7 @@ public class Metrics {
      * @param name        name of the health check
      * @param healthcheck a health check object to regiser.
      */
+    @SuppressWarnings("SameParameterValue")
     public static void registerHealthCheck(final String name, final HealthCheck healthcheck) {
         Metrics.getHealthCheckRegistry().register(name, healthcheck);
     }

@@ -26,7 +26,7 @@ import java.util.Map;
  * Source https://github.com/turn/metrics-system
  * @see OperatingSystemMXBean
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "Convert2Lambda"})
 public class OperatingSystemMetricSet implements MetricSet {
 
     private final OperatingSystemMXBean os;
@@ -127,11 +127,7 @@ public class OperatingSystemMetricSet implements MetricSet {
             final Method method = os.getClass().getDeclaredMethod(name);
             method.setAccessible(true);
             return (Long) method.invoke(os);
-        } catch (NoSuchMethodException e) {
-            return dflt;
-        } catch (IllegalAccessException e) {
-            return dflt;
-        } catch (InvocationTargetException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return dflt;
         }
     }
@@ -148,11 +144,7 @@ public class OperatingSystemMetricSet implements MetricSet {
             final Method method = os.getClass().getDeclaredMethod(name);
             method.setAccessible(true);
             return (Double) method.invoke(os);
-        } catch (NoSuchMethodException e) {
-            return dflt;
-        } catch (IllegalAccessException e) {
-            return dflt;
-        } catch (InvocationTargetException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return dflt;
         }
     }

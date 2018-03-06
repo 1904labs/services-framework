@@ -37,13 +37,13 @@ public class ServiceInfo {
     // Default: /servicename
     public static String mainPath = ConfigurationReader.getProperty(serviceName + ".main.path", System.getProperty("mainPath", "/" + serviceName));
 
-    //Default: io.tsdb.servicename.rest
+    //Default: io.tsdb.servicename.rest //io.tsdb.services.example.rest
     public static String endpointPackage = ConfigurationReader.getProperty(serviceName + ".main.endpointpackage",
-            System.getProperty("mainPath", "io.tsdb." + serviceName + ".rest"));
+            System.getProperty("mainPath", "io.tsdb.services." + serviceName + ".rest"));
 
     //Default: io.tsdb.servicename.providers
     public static String providersPackage = ConfigurationReader.getProperty(serviceName + ".main.providerspackage",
-            System.getProperty("mainPath", "io.tsdb." + serviceName + ".providers"));
+            System.getProperty("mainPath", "io.tsdb.services." + serviceName + ".providers"));
 
     public static int adminPort = ConfigurationReader.getIntegerProperty(serviceName + ".admin.port", 8081);
 
@@ -73,6 +73,7 @@ public class ServiceInfo {
         return hostname;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static String getMachineIP() {
         try {
             String hostIP = InetAddress.getLocalHost().getHostAddress();

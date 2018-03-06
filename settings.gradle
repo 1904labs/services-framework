@@ -1,3 +1,2 @@
 include 'framework-base'
 include 'framework-common'
-include 'stats'

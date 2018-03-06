@@ -14,11 +14,9 @@ import java.util.concurrent.TimeUnit;
  * @author jcreasy
  */
 abstract class AbstractHealthcheckReporter implements Runnable {
-    InstrumentedScheduledExecutorService scheduler = new InstrumentedScheduledExecutorService(Executors.newScheduledThreadPool(2), Metrics.getMetricRegistry());
+    private static final InstrumentedScheduledExecutorService scheduler = new InstrumentedScheduledExecutorService(Executors.newScheduledThreadPool(2), Metrics.getMetricRegistry());
 
-    protected void report(List<HealthcheckResult> results) {
-        return;
-    }
+    abstract void report(List<HealthcheckResult> results);
 
     AbstractHealthcheckReporter(int reportingInterval) {
         scheduler.scheduleAtFixedRate(this, reportingInterval, reportingInterval, TimeUnit.SECONDS);
@@ -31,7 +29,6 @@ abstract class AbstractHealthcheckReporter implements Runnable {
         for (Map.Entry<String, HealthCheck.Result> entry : Metrics.getHealthCheckRegistry().runHealthChecks().entrySet()) {
             checkResults.add(new HealthcheckResult(entry.getKey(), entry.getValue()));
         }
-
         report(checkResults);
     }
 }

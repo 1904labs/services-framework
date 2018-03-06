@@ -17,10 +17,12 @@ public class SensuHealthcheckReporter extends AbstractHealthcheckReporter {
     private String clientSocketHost = "localhost";
     private int clientSocketPort = 3030;
 
+    @SuppressWarnings("unused")
     public SensuHealthcheckReporter(int reportingInterval) {
         super(reportingInterval);
     }
-
+    
+    @SuppressWarnings("unused")
     public SensuHealthcheckReporter(int reportingInterval, String clientSocketHost, int clientSocketPort) {
         super(reportingInterval);
         this.setClientSocketHost(clientSocketHost);

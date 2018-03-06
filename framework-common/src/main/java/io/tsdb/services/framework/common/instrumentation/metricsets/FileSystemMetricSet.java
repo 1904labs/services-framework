@@ -36,7 +36,7 @@ import java.util.Map;
  * License https://github.com/inst-tech/metrics-system/blob/master/LICENSE
  * Source https://github.com/turn/metrics-system
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "Convert2Lambda"})
 public class FileSystemMetricSet implements MetricSet {
 
     private final FileSystem fileSystems;
@@ -150,7 +150,7 @@ public class FileSystemMetricSet implements MetricSet {
      * @param store the {@link FileStore} to get name of
      * @return A name for {@code store} usable in a metric name
      */
-    public String getFSName(FileStore store) {
+    private String getFSName(FileStore store) {
         return getFSNameByToStringPath(store);
     }
 
@@ -185,7 +185,7 @@ public class FileSystemMetricSet implements MetricSet {
      * @return A name based on the mount location as extracted from
      * {@link FileStore#toString()}
      */
-    public String getFSNameByToStringPath(FileStore store) {
+    private String getFSNameByToStringPath(FileStore store) {
         String path;
         try {
             // Mount point path is the first word from toString()

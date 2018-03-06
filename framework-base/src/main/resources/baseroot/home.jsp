@@ -2,7 +2,7 @@
         <div class="starter-template">
             <h1>Bootstrap starter template</h1>
             <p class="lead">Hi <shiro:guest>Guest</shiro:guest><shiro:user><shiro:principal/></shiro:user>!
-                ( <shiro:user><a href="<c:url value="logout"/>">
+                ( <shiro:user><a href="/logout">
                     <button class="btn btn-outline-success" type="submit">Log Out</button>
                 </a></shiro:user>
                 <shiro:guest><a href="<c:url value="login.jsp"/>">
@@ -14,6 +14,9 @@
                 <h3>Roles you have</h3>
                 <p>
                 <ul class="list-group">
+                    <shiro:hasRole name="guest">
+                        <li class="list-group-item">guest</li>
+                    </shiro:hasRole>
                     <shiro:hasRole name="admin">
                         <li class="list-group-item">admin</li>
                     </shiro:hasRole>
@@ -39,6 +42,9 @@
                 <h3>Roles you DO NOT have</h3>
                 <p>
                 <ul class="list-group">
+                    <shiro:lacksRole name="guest">
+                        <li class="list-group-item">guest</li>
+                    </shiro:lacksRole>
                     <shiro:lacksRole name="admin">
                         <li class="list-group-item">admin</li>
                     </shiro:lacksRole>

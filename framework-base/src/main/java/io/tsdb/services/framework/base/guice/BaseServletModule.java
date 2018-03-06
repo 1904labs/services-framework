@@ -22,11 +22,11 @@ public class BaseServletModule extends ServletModule {
     @Override
     protected void configureServlets() {
 
-        String endpointPackages = "io.tsdb.base.service.filters;"
-                + "io.tsdb.base.service.responses;"
-                + "io.tsdb.base.service.providers;"
-                + "io.tsdb.base.service.rest;"
-                + "io.tsdb.base.shiro.providers;"
+        String endpointPackages = "io.tsdb.services.framework.base.service.filters;"
+                + "io.tsdb.services.framework.base.service.responses;"
+                + "io.tsdb.services.framework.base.service.providers;"
+                + "io.tsdb.services.framework.base.service.rest;"
+                + "io.tsdb.services.framework.base.shiro.providers;"
                 + ServiceInfo.endpointPackage + ";" // io.tsdb.$servicename.rest
                 + ServiceInfo.providersPackage + ";"; // io.tsdb.$servicename.providers
 

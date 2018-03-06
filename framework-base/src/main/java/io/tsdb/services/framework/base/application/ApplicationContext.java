@@ -22,11 +22,12 @@ public class ApplicationContext extends AbstractApplicationContext {
     private BaseServletContextListener servletContextListener;
 
     private Server appServer;
-    private Server adminServer;
+   // private Server adminServer;
 
     /**
      * Creates ApplicationContext with specific guice module(s)
      * {@link com.google.inject.Module}.
+     * @param modules a list of modules to initialize
      */
     public ApplicationContext(final Module... modules) {
         initializeInfrastructure();
@@ -62,12 +63,12 @@ public class ApplicationContext extends AbstractApplicationContext {
     private void setupServer() {
         LOGGER.info("Creating HTTP servers");
         appServer = configureServer(getApplicationPort());
-        adminServer = configureServer(getAdminPort());
+        //adminServer = configureServer(getAdminPort());
 
         LOGGER.info("Creating HTTP handlers");
         try {
             appServer.setHandler(getApplicationHandler());
-            adminServer.setHandler(getAdminHandler());
+          //  adminServer.setHandler(getAdminHandler());
         } catch (IOException | URISyntaxException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -86,14 +87,14 @@ public class ApplicationContext extends AbstractApplicationContext {
             LOGGER.debug("Could not start appServer", e);
             System.exit(4);
         }
-
+/*
         try {
             adminServer.start();
         } catch (Exception e) {
             LOGGER.error("Could not start adminServer: {}", e.getMessage());
             LOGGER.debug("Could not start adminServer", e);
             System.exit(5);
-        }
+        }*/
     }
 
     /**
@@ -110,7 +111,7 @@ public class ApplicationContext extends AbstractApplicationContext {
         } else {
             LOGGER.error("application server instance is NOT running");
         }
-
+/*
         if (null != adminServer) {
             try {
                 adminServer.stop();
@@ -119,6 +120,6 @@ public class ApplicationContext extends AbstractApplicationContext {
             }
         } else {
             LOGGER.error("admin server instance is NOT running");
-        }
+        }*/
     }
 }

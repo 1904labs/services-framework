@@ -1,5 +1,3 @@
-apply plugin: 'java'
-
 buildscript {
     repositories {
         jcenter()
@@ -11,21 +9,31 @@ allprojects {
     apply plugin: 'java'
     apply plugin: 'checkstyle'
     apply plugin: 'findbugs'
-    apply plugin: 'distribution'
+    apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
+    apply plugin: 'distribution'
 
+    version = '0.1.1-SNAPSHOT'
     group = 'io.tsdb.services'
-    version = "0.1.0"
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-    description = "TSDB.io Services Framework"
 
-    configurations {
-        providedCompile
-        compile.extendsFrom providedCompile
-    }
+    String pomGroup = project.group
+    String pomRepositoryUrl = 'scm:git:https://github.com/inst-tech/services-framework.git'
+    String pomScmUrl = 'https://github.com/inst-tech/services-framework'
+    String pomDescription = 'tsdb.io services framework'
+    String pomLicenseName = 'The Apache License, Version 2.0'
+    String pomLicenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    String pomDeveloperId = 'johann8384'
+    String pomDeveloperEmail = 'jonathan.creasy@gmail.com'
+    String pomDeveloperName = 'Jonathan Creasy'
+
+    String pomName = project.name
+    archivesBaseName = project.name
+
+    description = 'tsdb.io Services Framework'
 
     ext {
         jettyVersion = '9.4.8.v20171121'
@@ -38,16 +46,12 @@ allprojects {
         shiroVersion = '1.4.0'
     }
 
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-    }
-
     repositories {
         flatDir {
             dirs 'libs'
         }
+        mavenLocal()
         jcenter()
-        maven { url "http://repo.maven.apache.org/maven2" }
         mavenCentral()
     }
 
@@ -73,36 +77,99 @@ allprojects {
         checkstyleMain.exclude '**/gensrc/**'
     }
 
-
     task('printVersion') {
         doLast {
             println project.version
         }
     }
 
-    task sourceJar(type: Jar) {
-        classifier "sources"
-        from sourceSets.main.allJava
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
     }
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier "javadoc"
-        from javadoc.destinationDir
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
     }
 
     artifacts {
-        archives jar
-        archives sourceJar
-        archives javadocJar
+        archives javadocJar, sourcesJar
+    }
+
+    signing {
+        useGpgCmd()
+        sign configurations.archives
     }
 
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                artifactId jar.baseName
                 from components.java
             }
         }
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name pomName
+                    description pomDescription
+                    url pomRepositoryUrl
+                    version version
+                    groupId pomGroup
+                    artifactId pomName
+                    packaging 'jar'
+                    scm {
+                        connection pomScmUrl
+                        developerConnection pomScmUrl
+                        url pomScmUrl
+                    }
+                    licenses {
+                        license {
+                            name pomLicenseName
+                            url pomLicenseUrl
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id pomDeveloperId
+                            name pomDeveloperName
+                            email pomDeveloperEmail
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Because if one does not want to release and
+// therefore does not have gradle.properties
+// the whole build will fail because the uploadArchives
+// is being evaluated and sonatypeUsername
+// and sonatypePassword is not going to be present
+// using '<<' in uploadArchives could be an option,
+// but it is deprecated in gradle 3.4
+def getSonatypeProperty(String name) {
+    name = 'ossrh' + name.capitalize()
+    if (project.hasProperty(name)) {
+        return project.getProperties()[name]
+    } else {
+        return ''
     }
 }
 
@@ -116,7 +183,6 @@ task assembleBinary(type: Copy) {
     into "${rootProject.buildDir}/install/bin/"
 }
 
-
 /*
  * Note, do NOT remove the exclude *.properties, we do not want centralstation.properties or other random
  * property files from our code getting deployed in a build.
@@ -125,18 +191,6 @@ task assembleBinary(type: Copy) {
  */
 
 subprojects {
-/*
-    task assembleDistWebRoot(type: Copy) {
-        from "${project.projectDir}/src/main/resources/webroot"
-        into "${rootProject.buildDir}/install/webroot/"
-    }
-
-    task assembleDistWebRootProjectDir(type: Copy) {
-        from "${project.projectDir}/src/main/resources/webroot/${project.name}"
-        into "${rootProject.buildDir}/install/webroot/${project.name}/"
-    }
-*/
-
     task assembleDistBin(dependsOn: assembleBinary, type: Copy) {
         from "${project.buildDir}/install/${project.name}/bin/${project.name}"
         into "${rootProject.buildDir}/install/bin/"
@@ -155,24 +209,11 @@ subprojects {
         include '*.properties'
         into "${rootProject.buildDir}/install/config/"
     }
-/*
-    Task assembleDistPKI(type: Copy) {
-        from "${project.buildDir}/install/${project.name}/"
-        include 'stunnel.infra.perspica.io.key.pkcs8'
-        include 'stunnel.infra.perspica.io.key.pem'
-        include 'stunnel.infra.perspica.io.cert.pem'
-        include 'techops.infra.perspica.io.key.pem'
-        include 'techops.infra.perspica.io.cert.pem'
-        include 'ca-chain.cert.pem'
-        include 'jssecacert'
-        into "${rootProject.buildDir}/install/config/"
-    }
-*/
 }
 
 project(':framework-base') {
     dependencies {
-        compile project(':framework-common')
+        compile group: 'io.tsdb.services', name: 'framework-common', version: '0.1.1-SNAPSHOT'
         compile group: 'org.eclipse.jetty', name: 'jetty-server', version: "${rootProject.ext.jettyVersion}"
         compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: "${rootProject.ext.jettyVersion}"
         compile group: 'org.eclipse.jetty', name: 'apache-jsp', version: "${rootProject.ext.jettyVersion}"
@@ -181,6 +222,8 @@ project(':framework-base') {
         compile group: 'org.jboss.resteasy', name: 'resteasy-guice', version: "${rootProject.ext.resteasyVersion}"
         compile group: 'org.jboss.resteasy', name: 'resteasy-jackson-provider', version: "${rootProject.ext.resteasyVersion}"
         compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
+        compile group: 'io.dropwizard.metrics', name: 'metrics-servlets', version: "${rootProject.ext.dropwizardVersion}"
+        compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: "${rootProject.ext.dropwizardVersion}"
         compile group: 'com.google.inject.extensions', name: 'guice-servlet', version: "${rootProject.ext.guiceVersion}"
         compile group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: "${rootProject.ext.guiceVersion}"
         compile group: 'com.google.inject.extensions', name: 'guice-multibindings', version: "${rootProject.ext.guiceVersion}"
@@ -192,10 +235,16 @@ project(':framework-base') {
             exclude group: 'com.google.inject.extensions', module: 'guice-assistedinject'
         }
         compile group: 'org.reflections', name: 'reflections', version: '0.9.11'
+        // https://mvnrepository.com/artifact/io.zipkin.brave/brave-http
+        compile group: 'io.zipkin.brave', name: 'brave-http', version: '4.13.4'
+        // https://mvnrepository.com/artifact/io.zipkin.java/zipkin
+        compile group: 'io.zipkin.java', name: 'zipkin', version: '2.5.0'
+        // https://mvnrepository.com/artifact/io.zipkin.zipkin2/zipkin-storage-elasticsearch
+        compile group: 'io.zipkin.zipkin2', name: 'zipkin-storage-elasticsearch', version: '2.5.0'
     }
 }
 
-project(':framework-common') {
+project ('framework-common') {
     dependencies {
         compile group: 'io.dropwizard.metrics', name: 'metrics-core', version: "${rootProject.ext.dropwizardVersion}"
         compile group: 'io.dropwizard.metrics', name: 'metrics-jvm', version: "${rootProject.ext.dropwizardVersion}"
@@ -216,13 +265,5 @@ project(':framework-common') {
             exclude(module: 'hamcrest-core')
         }
         testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
-    }
-}
-
-project('stats') {
-    apply plugin: 'application'
-    mainClassName = "io.tsdb.stats.main.Main"
-    dependencies {
-        compile project(':framework-base')
     }
 }

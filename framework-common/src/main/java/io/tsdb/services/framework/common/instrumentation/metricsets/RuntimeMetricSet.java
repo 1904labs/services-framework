@@ -17,7 +17,7 @@ import java.util.Map;
  * Source https://github.com/turn/metrics-system
  * @see java.lang.management.RuntimeMXBean
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "Convert2Lambda"})
 public class RuntimeMetricSet implements MetricSet {
     private final java.lang.management.RuntimeMXBean runtimeMXBean;
 

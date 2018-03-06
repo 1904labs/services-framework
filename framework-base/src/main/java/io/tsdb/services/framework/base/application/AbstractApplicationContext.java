@@ -56,6 +56,7 @@ abstract class AbstractApplicationContext {
         //TODO: Add Consul Service Discover here
     }
 
+
     /**
      * Gets application path.
      *
@@ -199,6 +200,25 @@ abstract class AbstractApplicationContext {
         servletContextHandler.setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, Metrics.getHealthCheckRegistry());
         servletContextHandler.addServlet(adminHolder, adminPath);
     }
+/*
+    public static List<StagemonitorServletContainerInitializer> getStagemonitorSCIs() {
+        List<StagemonitorServletContainerInitializer> sciPlugins = new ArrayList<StagemonitorServletContainerInitializer>();
+        for (StagemonitorServletContainerInitializer plugin : ServiceLoader
+                .load(StagemonitorServletContainerInitializer.class, ServletContainerInitializerUtil.class.getClassLoader())) {
+            sciPlugins.add(plugin);
+        }
+        return sciPlugins;
+    }
+
+    public static boolean avoidDoubleInit(StagemonitorServletContainerInitializer sci, ServletContext ctx) {
+        final String initializedAttribute = sci.getClass().getName() + ".initialized";
+        if (ctx.getAttribute(initializedAttribute) != null) {
+            // already initialized
+            return true;
+        }
+        ctx.setAttribute(initializedAttribute, true);
+        return false;
+    }*/
 
     /**
      * Creates instrumented handler for the handler instance passed in.
@@ -227,15 +247,41 @@ abstract class AbstractApplicationContext {
     /**
      * Allows the developer to use dependency injection ot load dynamic servlets
      *
-     * @param context the ServletContextHandler to configure
+     * @param servletContextHandler the ServletContextHandler to configure
      * @param path    the path for the added Servlets
      */
-    protected abstract void addDynamicServlets(final ServletContextHandler context, final String path);
+    protected abstract void addDynamicServlets(final ServletContextHandler servletContextHandler, final String path);
 
+    protected void addTracingFilter(final ServletContextHandler context) {
+
+        //OpenTracing
+        //TracingFilter filter = new TracingFilter(GlobalTracer.get());
+        //servletContextHandler.getServletContext().addFilter("tracingFilter", filter);
+
+        // Stagemonitor
+        /*servletContextHandler.addLifeCycleListener(new AbstractLifeCycle.AbstractLifeCycleListener() {
+            @Override
+            public void lifeCycleStarting(LifeCycle event) {
+                //new ServletContainerInitializerUtil.registerStagemonitorServletContainerInitializers(servletContextHandler);
+                if (!Stagemonitor.getPlugin(CorePlugin.class).isStagemonitorActive()) {
+                    return;
+                }
+                for (StagemonitorServletContainerInitializer sci : getStagemonitorSCIs()) {
+                    try {
+                        sci.onStartup(servletContextHandler.getServletContext());
+                    } catch (ServletException e) {
+                        LOGGER.warn("Ignored exception:", e);
+                    }
+                }
+            }
+        });*/
+    }
     /**
      * Creates a instrumented servlet handler.
      *
      * @return InstrumentedHandler an instrumented handler instance
+     * @throws IOException throws this
+     * @throws URISyntaxException and this
      */
     protected InstrumentedHandler getApplicationHandler() throws IOException, URISyntaxException {
         LOGGER.info("Setting up Application Handler");
@@ -253,6 +299,8 @@ abstract class AbstractApplicationContext {
             addAdminServlets(context);
         }
 
+        addTracingFilter(context);
+
         setContextResourceBase(context, BASEROOT_INDEX);
 
         // Enable JSP Support, used to serve authentication pages in the base
@@ -260,7 +308,6 @@ abstract class AbstractApplicationContext {
 
         addDynamicServlets(context, getApplicationPath());
         addDefaultHandler(context, "/", getWebRootResourceUri(BASEROOT_INDEX));
-
         return getInstrumentedHandler(context);
     }
 
@@ -270,7 +317,7 @@ abstract class AbstractApplicationContext {
 
         final ResourceHandler handler = new ResourceHandler();
         handler.setDirectoriesListed(false);
-        handler.setWelcomeFiles(new String[]{"index.html"});
+        handler.setWelcomeFiles(new String[]{ "index.jsp", "index.html"});
         handler.setResourceBase(resourceBaseUri);
 
         return getInstrumentedHandler(handler);
@@ -324,6 +371,7 @@ abstract class AbstractApplicationContext {
         holderJsp.setInitParameter("compilerSourceVM", "1.8");
         holderJsp.setInitParameter("keepgenerated", "true");
         servletContextHandler.addServlet(holderJsp, "*.jsp");
+        servletContextHandler.setWelcomeFiles(new String[]{ "index.jsp", "index.html"});
     }
 
     protected void addDefaultHandler(final ServletContextHandler servletContextHandler, @SuppressWarnings("SameParameterValue") final String path, final String baseUri) {

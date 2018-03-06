@@ -20,6 +20,7 @@ package io.tsdb.services.framework.base.shiro.modules;
 
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
+import io.tsdb.services.framework.common.configuration.ServiceInfo;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.guice.web.ShiroWebModule;
 import org.apache.shiro.realm.text.IniRealm;
@@ -55,6 +56,7 @@ public class ShiroServletModule extends ShiroWebModule {
         this.addFilterChain("/index.jsp", ANON);
         this.addFilterChain("/home.jsp", ANON);
         this.addFilterChain("/static/**", ANON);
+        this.addFilterChain("/" + ServiceInfo.serviceName, ANON);
         this.addFilterChain("/**", ANON);
     }
 

@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 /**
  * @author jcreasy
  */
+@SuppressWarnings("unused")
 public interface MetricsConfigurationInterface {
     String getMetricRoot();
 

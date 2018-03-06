@@ -13,6 +13,7 @@ import java.util.Map;
 /**
  * @author jcreasy
  */
+@SuppressWarnings("WeakerAccess")
 public class HealthcheckResult implements Serializable {
     private final List<String> handlers = new ArrayList<>();
     private final Map<String, String> tags = new HashMap<>();
@@ -20,6 +21,7 @@ public class HealthcheckResult implements Serializable {
     private String output;
     private HealthcheckResultStatus status = HealthcheckResultStatus.OK;
 
+    @SuppressWarnings("unused")
     public HealthcheckResult(String name, String output) {
         this(name, output, HealthcheckResultStatus.UNKNOWN);
     }
@@ -62,6 +64,7 @@ public class HealthcheckResult implements Serializable {
         this.status = status;
     }
 
+    @SuppressWarnings("unused")
     public int getStatusValue() {
         return status.getValue();
     }
@@ -70,7 +73,7 @@ public class HealthcheckResult implements Serializable {
         return output;
     }
 
-    public void setOutput(String output) {
+    private void setOutput(String output) {
         this.output = output;
     }
 
@@ -90,7 +93,7 @@ public class HealthcheckResult implements Serializable {
         return handlers;
     }
 
-    public void addHandler(String handler) {
+    public void addHandler(@SuppressWarnings("SameParameterValue") String handler) {
         this.handlers.add(handler);
     }
 
