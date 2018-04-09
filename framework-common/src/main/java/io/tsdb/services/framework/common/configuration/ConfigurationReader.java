@@ -66,7 +66,7 @@ public final class ConfigurationReader {
         if (propertiesConfiguration.getConfiguration() != null) {
             LOGGER.debug("Successfully loaded {}", fileName);
             try {
-                LOGGER.debug("Adding resulting configuraiton to the Combined Configuration");
+                LOGGER.debug("Adding resulting configuration to the Combined Configuration");
                 COMBINED_CONFIGURATION.addConfiguration(propertiesConfiguration.getConfiguration());
                 LOGGER.debug("Success");
             } catch (Exception e) {

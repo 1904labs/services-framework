@@ -200,25 +200,6 @@ abstract class AbstractApplicationContext {
         servletContextHandler.setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, Metrics.getHealthCheckRegistry());
         servletContextHandler.addServlet(adminHolder, adminPath);
     }
-/*
-    public static List<StagemonitorServletContainerInitializer> getStagemonitorSCIs() {
-        List<StagemonitorServletContainerInitializer> sciPlugins = new ArrayList<StagemonitorServletContainerInitializer>();
-        for (StagemonitorServletContainerInitializer plugin : ServiceLoader
-                .load(StagemonitorServletContainerInitializer.class, ServletContainerInitializerUtil.class.getClassLoader())) {
-            sciPlugins.add(plugin);
-        }
-        return sciPlugins;
-    }
-
-    public static boolean avoidDoubleInit(StagemonitorServletContainerInitializer sci, ServletContext ctx) {
-        final String initializedAttribute = sci.getClass().getName() + ".initialized";
-        if (ctx.getAttribute(initializedAttribute) != null) {
-            // already initialized
-            return true;
-        }
-        ctx.setAttribute(initializedAttribute, true);
-        return false;
-    }*/
 
     /**
      * Creates instrumented handler for the handler instance passed in.

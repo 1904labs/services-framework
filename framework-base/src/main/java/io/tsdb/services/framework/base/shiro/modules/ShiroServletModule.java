@@ -20,6 +20,7 @@ package io.tsdb.services.framework.base.shiro.modules;
 
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
+import io.tsdb.services.framework.common.configuration.ConfigurationReader;
 import io.tsdb.services.framework.common.configuration.ServiceInfo;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.guice.web.ShiroWebModule;
@@ -33,6 +34,7 @@ import java.net.MalformedURLException;
 
 public class ShiroServletModule extends ShiroWebModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiroServletModule.class);
+    private static final String SHIRO_INI_URL = ConfigurationReader.getProperty("shiro.configuration", "classpath:shiro.ini");
     private final ServletContext servletContext;
 
     public ShiroServletModule(ServletContext servletContext) {
@@ -65,7 +67,7 @@ public class ShiroServletModule extends ShiroWebModule {
     Ini loadShiroIni() throws MalformedURLException {
         LOGGER.debug("Load Shiro INI");
         try {
-            return Ini.fromResourcePath("classpath:shiro.ini");
+            return Ini.fromResourcePath(SHIRO_INI_URL);
         } catch (Exception e) {
             LOGGER.error("Could not load INI", e);
             throw e;
