@@ -3,6 +3,9 @@ buildscript {
         jcenter()
         mavenCentral()
     }
+    dependencies {
+        classpath 'com.netflix.nebula:gradle-lint-plugin:latest.release'
+    }
 }
 
 allprojects {
@@ -11,6 +14,9 @@ allprojects {
     apply plugin: 'findbugs'
     apply plugin: 'distribution'
     apply plugin: 'maven'
+
+    apply plugin: 'nebula.lint'
+    gradleLint.rules = ['all-dependency'] // add as many rules here as you'd like
 
     version = '0.1.1-SNAPSHOT'
     group = 'io.tsdb.services'
@@ -159,18 +165,14 @@ project(':framework-base') {
         compile group: 'com.google.inject.extensions', name: 'guice-multibindings', version: "${rootProject.ext.guiceVersion}"
         compile group: 'org.apache.shiro', name: 'shiro-web', version: "${rootProject.ext.shiroVersion}"
         compile group: 'org.apache.shiro', name: 'shiro-crypto-core', version: '1.4.0'
-        compile(group: 'org.apache.shiro', name: 'shiro-guice', version: "${rootProject.ext.shiroVersion}") {
-            exclude group: 'com.google.inject', module: 'guice'
-            exclude group: 'com.google.inject.extensions', module: 'guice-multibindings'
-            exclude group: 'com.google.inject.extensions', module: 'guice-assistedinject'
-        }
+        compile group: 'org.apache.shiro', name: 'shiro-guice', version: "${rootProject.ext.shiroVersion}"
         compile group: 'org.reflections', name: 'reflections', version: '0.9.11'
         // https://mvnrepository.com/artifact/io.zipkin.brave/brave-http
-        compile group: 'io.zipkin.brave', name: 'brave-http', version: '4.13.4'
+        //compile group: 'io.zipkin.brave', name: 'brave-http', version: '4.13.4'
         // https://mvnrepository.com/artifact/io.zipkin.java/zipkin
-        compile group: 'io.zipkin.java', name: 'zipkin', version: '2.5.0'
+        //compile group: 'io.zipkin.java', name: 'zipkin', version: '2.5.0'
         // https://mvnrepository.com/artifact/io.zipkin.zipkin2/zipkin-storage-elasticsearch
-        compile group: 'io.zipkin.zipkin2', name: 'zipkin-storage-elasticsearch', version: '2.5.0'
+        //compile group: 'io.zipkin.zipkin2', name: 'zipkin-storage-elasticsearch', version: '2.5.0'
     }
 }
 
