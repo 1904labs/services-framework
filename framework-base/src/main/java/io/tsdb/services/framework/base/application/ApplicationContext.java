@@ -14,11 +14,13 @@ import java.net.URISyntaxException;
 import java.util.EnumSet;
 
 /**
- * The entry point for the base service, sets up Jetty containers
+ * The entry point for the base service, sets up Jetty containers.
  * @author jcreasy
  */
-public class ApplicationContext extends AbstractApplicationContext {
+public final class ApplicationContext extends AbstractApplicationContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
+    private static final int EXIT_CODE = 4;
+
     private BaseServletContextListener servletContextListener;
 
     private Server appServer;
@@ -36,12 +38,13 @@ public class ApplicationContext extends AbstractApplicationContext {
     }
 
     /**
-     * We are using Guice to dnyamically load Filters and JAX-RS endpoints
+     * We are using Guice to dnyamically load Filters and JAX-RS endpoints.
+     *
      * @param context the ServletContextHandler to configure
      * @param path    the path for the added Servlets
      */
     @Override
-    protected void addDynamicServlets(ServletContextHandler context, String path) {
+    protected void addDynamicServlets(final ServletContextHandler context, final String path) {
         LOGGER.info("Adding Guice Injected Servlets at: {}", path);
         context.addEventListener(servletContextListener);
         context.addFilter(GuiceFilter.class, "/*", EnumSet.of(javax.servlet.DispatcherType.REQUEST, javax.servlet.DispatcherType.ASYNC));
@@ -58,7 +61,7 @@ public class ApplicationContext extends AbstractApplicationContext {
     }
 
     /**
-     * Setup the Application and Admin servers
+     * Setup the Application and Admin servers.
      */
     private void setupServer() {
         LOGGER.info("Creating HTTP servers");
@@ -77,7 +80,8 @@ public class ApplicationContext extends AbstractApplicationContext {
     /**
      * Starts application and administration servers.
      */
-    public final void start() {
+    @SuppressWarnings("unused")
+    public void start() {
         setupServer();
 
         try {
@@ -85,7 +89,7 @@ public class ApplicationContext extends AbstractApplicationContext {
         } catch (Exception e) {
             LOGGER.error("Could not start appServer: {}", e.getMessage());
             LOGGER.debug("Could not start appServer", e);
-            System.exit(4);
+            System.exit(EXIT_CODE);
         }
 /*
         try {
@@ -101,7 +105,7 @@ public class ApplicationContext extends AbstractApplicationContext {
      * Stops current running server(s) - application / admin server instances.
      */
     @SuppressWarnings("unused")
-    public final void stop() {
+    public void stop() {
         if (null != appServer) {
             try {
                 appServer.stop();

@@ -13,11 +13,11 @@ import javax.ws.rs.ext.Provider;
  */
 
 @Provider
-public class UnauthorizedExceptionMapper implements ExceptionMapper<UnauthorizedException> {
+public final class UnauthorizedExceptionMapper implements ExceptionMapper<UnauthorizedException> {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(UnauthorizedExceptionMapper.class);
 
     @Override
-    public Response toResponse(UnauthorizedException exception) {
+    public Response toResponse(final UnauthorizedException exception) {
         LOGGER.debug("Handled Exception: {}", exception.toString());
         return GenericExceptionMapper.genericResponse(exception, Response.Status.FORBIDDEN.getStatusCode());
     }

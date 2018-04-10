@@ -13,7 +13,7 @@ import javax.servlet.annotation.WebListener;
  * @author jcreasy
  */
 @WebListener
-public class BaseServletModule extends ServletModule {
+public final class BaseServletModule extends ServletModule {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseServletModule.class);
 
     /**

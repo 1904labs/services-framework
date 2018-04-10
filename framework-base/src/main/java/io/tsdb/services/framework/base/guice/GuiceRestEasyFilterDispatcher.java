@@ -18,16 +18,19 @@ import javax.servlet.ServletException;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Type;
 
+/**
+ * @author jcreasy
+ */
 @Singleton
-public class GuiceRestEasyFilterDispatcher extends FilterDispatcher {
+public final class GuiceRestEasyFilterDispatcher extends FilterDispatcher {
 
-    private static final Logger log = LoggerFactory.getLogger(GuiceRestEasyFilterDispatcher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GuiceRestEasyFilterDispatcher.class);
 
     @Inject
-    Injector injector;
+    private Injector injector;
 
     @Override
-    public void init(FilterConfig servletConfig) throws ServletException {
+    public void init(final FilterConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
         Registry registry = getDispatcher().getRegistry();
@@ -39,12 +42,12 @@ public class GuiceRestEasyFilterDispatcher extends FilterDispatcher {
                 Class<?> beanClass = (Class<?>) type;
                 if (GetRestful.isRootResource(beanClass)) {
                     ResourceFactory resourceFactory = new GuiceResourceFactory(binding.getProvider(), beanClass);
-                    log.info("registering factory for {}", beanClass.getName());
+                    LOGGER.info("registering factory for {}", beanClass.getName());
                     registry.addResourceFactory(resourceFactory);
                 }
 
                 if (beanClass.isAnnotationPresent(Provider.class)) {
-                    log.info("registering provider instance for {}", beanClass.getName());
+                    LOGGER.info("registering provider instance for {}", beanClass.getName());
                     providerFactory.registerProviderInstance(binding.getProvider().get());
                 }
             }

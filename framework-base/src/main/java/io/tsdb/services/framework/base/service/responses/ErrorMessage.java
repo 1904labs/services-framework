@@ -4,7 +4,7 @@ package io.tsdb.services.framework.base.service.responses;
  * @author jcreasy
  */
 
-public class ErrorMessage {
+class ErrorMessage {
     
     private int code;
     private String message;
@@ -12,29 +12,29 @@ public class ErrorMessage {
     /**
      * @return the code
      */
-    public int getCode() {
+    int getCode() {
         return code;
     }
     
     /**
-     * @param code the code to set
+     * @param providedCode the code to set
      */
-    public void setCode(int code) {
-        this.code = code;
+    void setCode(final int providedCode) {
+        this.code = providedCode;
     }
     
     /**
      * @return the message
      */
-    public String getMessage() {
+    String getMessage() {
         return message;
     }
     
     /**
-     * @param message the message to set
+     * @param providedMessage the message to set
      */
-    public void setMessage(String message) {
-        this.message = message;
+    void setMessage(final String providedMessage) {
+        this.message = providedMessage;
     }
     
 }

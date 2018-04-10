@@ -32,15 +32,24 @@ import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
 
-public class ShiroServletModule extends ShiroWebModule {
+/**
+ * ShiroServletModule, this is the meat of the Shiro integration.
+ */
+public final class ShiroServletModule extends ShiroWebModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiroServletModule.class);
     private static final String SHIRO_INI_URL = ConfigurationReader.getProperty("shiro.configuration", "classpath:shiro.ini");
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final ServletContext servletContext;
 
-    public ShiroServletModule(ServletContext servletContext) {
-        super(servletContext);
+    /**
+     * The ShiroServletModule.
+     *
+     * @param context a ServletContext to operate on
+     */
+    public ShiroServletModule(final ServletContext context) {
+        super(context);
         LOGGER.debug("Initialize ShiroWebModule");
-        this.servletContext = servletContext;
+        this.servletContext = context;
     }
 
     @Override
@@ -62,6 +71,13 @@ public class ShiroServletModule extends ShiroWebModule {
         this.addFilterChain("/**", ANON);
     }
 
+    /**
+     * Loads the Shiro INI file.
+     * This is where the user and group information comes from.
+     *
+     * @return returns in INI file objects
+     * @throws MalformedURLException thrown if the URL cannot be resolved
+     */
     @Provides
     @Singleton
     Ini loadShiroIni() throws MalformedURLException {

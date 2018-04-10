@@ -9,10 +9,8 @@ allprojects {
     apply plugin: 'java'
     apply plugin: 'checkstyle'
     apply plugin: 'findbugs'
-    apply plugin: 'maven'
-    apply plugin: 'maven-publish'
-    apply plugin: 'signing'
     apply plugin: 'distribution'
+    apply plugin: 'maven'
 
     version = '0.1.1-SNAPSHOT'
     group = 'io.tsdb.services'
@@ -57,26 +55,31 @@ allprojects {
         mavenCentral()
     }
 
-    findbugsMain {
-        reports {
-            xml.enabled = true
-            html.enabled = false
-        }
+    findbugs {
         ignoreFailures = true
+        sourceSets=[sourceSets.main]
+        reportsDir = file("$project.buildDir/reports/findbugs")
+        effort = "max"
     }
-
-    findbugsTest {
+    tasks.withType(FindBugs) {
         reports {
-            xml.enabled = true
-            html.enabled = false
+            xml.enabled false
+            html.enabled true
         }
-        ignoreFailures = true
     }
 
     checkstyle {
         configFile = rootProject.file('checkstyle/checkstyle.xml')
         showViolations = false
         checkstyleMain.exclude '**/gensrc/**'
+    }
+
+    checkstyleMain {
+        source ='src/main/java'
+    }
+
+    checkstyleTest {
+        source ='src/test/java'
     }
 
     task('printVersion') {
@@ -97,81 +100,6 @@ allprojects {
 
     artifacts {
         archives javadocJar, sourcesJar
-    }
-
-    signing {
-        useGpgCmd()
-        sign configurations.archives
-    }
-
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-            }
-        }
-    }
-
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ${rootProject.ext.ossrhUsername}, password: ${rootProject.ext.ossrhPassword})
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ${rootProject.ext.ossrhUsername}, password: ${rootProject.ext.ossrhPassword})
-                }
-
-                pom.project {
-                    name pomName
-                    description pomDescription
-                    url pomRepositoryUrl
-                    version version
-                    groupId pomGroup
-                    artifactId pomName
-                    packaging 'jar'
-                    scm {
-                        connection pomScmUrl
-                        developerConnection pomScmUrl
-                        url pomScmUrl
-                    }
-                    licenses {
-                        license {
-                            name pomLicenseName
-                            url pomLicenseUrl
-                            distribution 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id pomDeveloperId
-                            name pomDeveloperName
-                            email pomDeveloperEmail
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Because if one does not want to release and
-// therefore does not have gradle.properties
-// the whole build will fail because the uploadArchives
-// is being evaluated and sonatypeUsername
-// and sonatypePassword is not going to be present
-// using '<<' in uploadArchives could be an option,
-// but it is deprecated in gradle 3.4
-def getSonatypeProperty(String name) {
-    name = 'ossrh' + name.capitalize()
-    if (project.hasProperty(name)) {
-        return project.getProperties()[name]
-    } else {
-        return ''
     }
 }
 

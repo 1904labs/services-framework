@@ -2,10 +2,21 @@ package io.tsdb.services.framework.base.shiro.modules;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
-import org.apache.shiro.authz.annotation.*;
-import org.apache.shiro.authz.aop.*;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresGuest;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresUser;
+import org.apache.shiro.authz.aop.AuthenticatedAnnotationMethodInterceptor;
+import org.apache.shiro.authz.aop.GuestAnnotationMethodInterceptor;
+import org.apache.shiro.authz.aop.PermissionAnnotationMethodInterceptor;
+import org.apache.shiro.authz.aop.RoleAnnotationMethodInterceptor;
+import org.apache.shiro.authz.aop.UserAnnotationMethodInterceptor;
 
-public class ShiroAnnotationsModule extends AbstractModule {
+/**
+ * @author jcreasy
+ */
+public final class ShiroAnnotationsModule extends AbstractModule {
 
     @Override
     protected void configure() {
@@ -20,6 +31,4 @@ public class ShiroAnnotationsModule extends AbstractModule {
         bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresAuthentication.class),
                 new ShiroMethodInterceptor(new AuthenticatedAnnotationMethodInterceptor()));
     }
-
-
 }

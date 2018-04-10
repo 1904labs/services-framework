@@ -12,11 +12,11 @@ import javax.ws.rs.ext.Provider;
  * @author jcreasy
  */
 @Provider
-public class UnauthenticatedExceptionMapper implements ExceptionMapper<UnauthenticatedException> {
+public final class UnauthenticatedExceptionMapper implements ExceptionMapper<UnauthenticatedException> {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(UnauthorizedExceptionMapper.class);
 
     @Override
-    public Response toResponse(UnauthenticatedException exception) {
+    public Response toResponse(final UnauthenticatedException exception) {
         LOGGER.debug("Handled Exception: {}", exception.toString());
         return GenericExceptionMapper.genericResponse(exception, Response.Status.UNAUTHORIZED.getStatusCode());
     }

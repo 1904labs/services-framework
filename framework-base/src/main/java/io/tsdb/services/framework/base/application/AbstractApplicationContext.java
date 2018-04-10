@@ -52,10 +52,7 @@ abstract class AbstractApplicationContext {
     protected void initializeInfrastructure() {
         LOGGER.debug("Initializing Metrics");
         Metrics.initialize();
-
-        //TODO: Add Consul Service Discover here
     }
-
 
     /**
      * Gets application path.
@@ -98,6 +95,7 @@ abstract class AbstractApplicationContext {
      *
      * @return port
      */
+    @SuppressWarnings("unused")
     protected int getAdminPort() {
         return adminPort;
     }
@@ -166,6 +164,14 @@ abstract class AbstractApplicationContext {
         return appServer;
     }
 
+    /**
+     * Returns a URI for the specified root path.
+     *
+     * @param webroot the Root location for the files to be served
+     * @return returns a URI pointing to the resolved location
+     * @throws FileNotFoundException thrown when the provided location is not found
+     * @throws URISyntaxException    thrown when the provided location cannot be parsed
+     */
     protected String getWebRootResourceUri(final String webroot) throws FileNotFoundException, URISyntaxException {
         final URL indexUri = this.getClass().getResource(webroot);
         if (indexUri == null) {
@@ -193,12 +199,11 @@ abstract class AbstractApplicationContext {
      * @param servletContextHandler a ServletContextHandler for administration server
      */
     protected void addAdminServlets(final ServletContextHandler servletContextHandler) {
-        final String adminPath = getAdminPath();
-        LOGGER.info("Serving Admin Servlets from: {}", adminPath);
+        LOGGER.info("Serving Admin Servlets from: {}", getAdminPath());
         final ServletHolder adminHolder = new ServletHolder(new AdminServlet());
         servletContextHandler.setAttribute(MetricsServlet.METRICS_REGISTRY, Metrics.getMetricRegistry());
         servletContextHandler.setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, Metrics.getHealthCheckRegistry());
-        servletContextHandler.addServlet(adminHolder, adminPath);
+        servletContextHandler.addServlet(adminHolder, getAdminPath());
     }
 
     /**
@@ -219,6 +224,7 @@ abstract class AbstractApplicationContext {
      *
      * @return InstrumentedHandler of admin servlet
      */
+    @SuppressWarnings("unused")
     protected InstrumentedHandler getAdminHandler() {
         ServletContextHandler handler = getContextHandler();
         addAdminServlets(handler);
@@ -226,36 +232,21 @@ abstract class AbstractApplicationContext {
     }
 
     /**
-     * Allows the developer to use dependency injection ot load dynamic servlets
+     * Allows the developer to use dependency injection ot load dynamic servlets.
      *
      * @param servletContextHandler the ServletContextHandler to configure
      * @param path    the path for the added Servlets
      */
-    protected abstract void addDynamicServlets(final ServletContextHandler servletContextHandler, final String path);
+    protected abstract void addDynamicServlets(ServletContextHandler servletContextHandler, String path);
 
+    /**
+     * Provides the ability to add a Tracing Filter, such as OpenTracing to the ServletContextHandler.
+     *
+     * @param context the ServletContextHandler to inject the tracing filter
+     */
+    @SuppressWarnings("unused")
     protected void addTracingFilter(final ServletContextHandler context) {
 
-        //OpenTracing
-        //TracingFilter filter = new TracingFilter(GlobalTracer.get());
-        //servletContextHandler.getServletContext().addFilter("tracingFilter", filter);
-
-        // Stagemonitor
-        /*servletContextHandler.addLifeCycleListener(new AbstractLifeCycle.AbstractLifeCycleListener() {
-            @Override
-            public void lifeCycleStarting(LifeCycle event) {
-                //new ServletContainerInitializerUtil.registerStagemonitorServletContainerInitializers(servletContextHandler);
-                if (!Stagemonitor.getPlugin(CorePlugin.class).isStagemonitorActive()) {
-                    return;
-                }
-                for (StagemonitorServletContainerInitializer sci : getStagemonitorSCIs()) {
-                    try {
-                        sci.onStartup(servletContextHandler.getServletContext());
-                    } catch (ServletException e) {
-                        LOGGER.warn("Ignored exception:", e);
-                    }
-                }
-            }
-        });*/
     }
     /**
      * Creates a instrumented servlet handler.
@@ -292,19 +283,36 @@ abstract class AbstractApplicationContext {
         return getInstrumentedHandler(context);
     }
 
+    /**
+     * Provides an Instrumented Resource Handler for a specified base.
+     *
+     * @param resourceBase the ResourceBase to load resources from
+     * @return Retuns an InstrumentedHandler
+     * @throws FileNotFoundException thrown if the resourceBase is not found
+     * @throws URISyntaxException thrown if the resourceBase cannot be parsed as a URI
+     */
     protected InstrumentedHandler getResourceHandler(final String resourceBase) throws FileNotFoundException, URISyntaxException {
         final String resourceBaseUri = getWebRootResourceUri(resourceBase);
         LOGGER.info("Serving static files from: {}", resourceBaseUri);
 
         final ResourceHandler handler = new ResourceHandler();
         handler.setDirectoriesListed(false);
-        handler.setWelcomeFiles(new String[]{ "index.jsp", "index.html"});
+        handler.setWelcomeFiles(new String[]{"index.jsp", "index.html"});
         handler.setResourceBase(resourceBaseUri);
 
         return getInstrumentedHandler(handler);
     }
 
-    protected void setContextResourceBase(final ServletContextHandler servletContextHandler, final String path) throws FileNotFoundException, URISyntaxException {
+    /**
+     * Sets the base URI for the ContextHandler.
+     *
+     * @param servletContextHandler the context handler to work with
+     * @param path                  the path to serve resources from
+     * @throws FileNotFoundException thrown if the path is not found
+     * @throws URISyntaxException    thrown if the path is not parsable into a URI
+     */
+    protected void setContextResourceBase(final ServletContextHandler servletContextHandler, final String path)
+            throws FileNotFoundException, URISyntaxException {
         // Base URI for servlet context
         final String baseUri = getWebRootResourceUri(path);
         LOGGER.debug("Serving files from: {}", baseUri);
@@ -352,10 +360,19 @@ abstract class AbstractApplicationContext {
         holderJsp.setInitParameter("compilerSourceVM", "1.8");
         holderJsp.setInitParameter("keepgenerated", "true");
         servletContextHandler.addServlet(holderJsp, "*.jsp");
-        servletContextHandler.setWelcomeFiles(new String[]{ "index.jsp", "index.html"});
+        servletContextHandler.setWelcomeFiles(new String[]{"index.jsp", "index.html"});
     }
 
-    protected void addDefaultHandler(final ServletContextHandler servletContextHandler, @SuppressWarnings("SameParameterValue") final String path, final String baseUri) {
+    /**
+     * Sets the default handler for the Context.
+     *
+     * @param servletContextHandler the context to be configured
+     * @param path                  the default path for the handler
+     * @param baseUri               the baseUri for the handler
+     */
+    protected void addDefaultHandler(final ServletContextHandler servletContextHandler,
+                                     @SuppressWarnings("SameParameterValue") final String path,
+                                     final String baseUri) {
         LOGGER.info("Added Default Handler:for {} on {}", path, baseUri);
 
         // Default Servlet (always last, always named "default")

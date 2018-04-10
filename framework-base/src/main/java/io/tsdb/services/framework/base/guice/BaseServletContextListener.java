@@ -13,12 +13,13 @@ import javax.servlet.ServletContextEvent;
 /**
  * @author jcreasy
  */
-public class BaseServletContextListener extends GuiceServletContextListener {
+public final class BaseServletContextListener extends GuiceServletContextListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseServletContextListener.class);
     private Module[] modules;
-    @SuppressWarnings("WeakerAccess")
-    ServletContext servletContext;
+
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    private ServletContext servletContext;
 
     /**
      * Creates with guice module(s) provided.
@@ -31,7 +32,7 @@ public class BaseServletContextListener extends GuiceServletContextListener {
     }
 
     @Override
-    public void contextInitialized(ServletContextEvent event) {
+    public void contextInitialized(final ServletContextEvent event) {
         servletContext = event.getServletContext();
         super.contextInitialized(event);
     }

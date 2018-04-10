@@ -16,13 +16,18 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle;
  * @author jcreasy
  */
 @Singleton
-public class JspStarter extends AbstractLifeCycle implements ServletContextHandler.ServletContainerInitializerCaller {
+public final class JspStarter extends AbstractLifeCycle implements ServletContextHandler.ServletContainerInitializerCaller {
     private JettyJasperInitializer sci;
     private ServletContextHandler context;
 
-    JspStarter(ServletContextHandler context) {
+    /**
+     * a JSP Starter.
+     *
+     * @param providedContext the ServletContextHandler to embded JSP support
+     */
+    JspStarter(final ServletContextHandler providedContext) {
         this.sci = new JettyJasperInitializer();
-        this.context = context;
+        this.context = providedContext;
         this.context.setAttribute("org.apache.tomcat.JarScanner", new StandardJarScanner());
     }
 

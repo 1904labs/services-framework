@@ -12,13 +12,17 @@ import java.util.Set;
 /**
  * @author jcreasy
  */
-public class PackageLoaderModule extends AbstractModule {
+public final class PackageLoaderModule extends AbstractModule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PackageLoaderModule.class);
-    private String REST_EASY_REST_PACKAGES;
+    private String restEasyRestPackages;
 
-    PackageLoaderModule(String packages) {
-        REST_EASY_REST_PACKAGES = packages;
+    /**
+     * Loads Packages.
+     * @param packages the list of packages to load
+     */
+    PackageLoaderModule(final String packages) {
+        restEasyRestPackages = packages;
     }
 
     @Override
@@ -26,13 +30,21 @@ public class PackageLoaderModule extends AbstractModule {
         loadFixedProviders();
     }
 
-    private void bindClass(Class classToBind) throws Exception {
+    /**
+     * Binds a located Class.
+     * @param classToBind class to bind
+     * @throws Exception thrown if it fails
+     */
+    private void bindClass(final Class classToBind) throws Exception {
         LOGGER.debug("Binding: {}", classToBind.getCanonicalName());
         bind(Class.forName(classToBind.getName()));
     }
 
+    /**
+     * Look through and load the providers.
+     */
     private void loadFixedProviders() {
-        String[] pkgs = REST_EASY_REST_PACKAGES.split(";");
+        String[] pkgs = restEasyRestPackages.split(";");
         Reflections reflections;
         for (String pkg : pkgs) {
             reflections = new Reflections(pkg);

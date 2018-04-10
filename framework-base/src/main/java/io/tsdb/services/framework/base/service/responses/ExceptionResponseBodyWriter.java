@@ -18,19 +18,28 @@ import java.lang.reflect.Type;
  */
 @Provider
 @Produces("text/html")
-public class ExceptionResponseBodyWriter implements MessageBodyWriter<ErrorMessage> {
+public final class ExceptionResponseBodyWriter implements MessageBodyWriter<ErrorMessage> {
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
         return type == ErrorMessage.class;
     }
 
     @Override
-    public long getSize(ErrorMessage exceptionResponse, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(final ErrorMessage exceptionResponse,
+                        final Class<?> type,
+                        final Type genericType,
+                        final Annotation[] annotations,
+                        final MediaType mediaType) {
         return 0;
     }
 
     @Override
-    public void writeTo(ErrorMessage errorMessage, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+    public void writeTo(final ErrorMessage errorMessage,
+                        final Class<?> type, final Type genericType,
+                        final Annotation[] annotations,
+                        final MediaType mediaType,
+                        final MultivaluedMap<String, Object> httpHeaders,
+                        final OutputStream entityStream) throws IOException, WebApplicationException {
         Writer writer = new PrintWriter(entityStream);
         writer.write("<html>");
         writer.write("<body>");
