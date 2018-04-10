@@ -1,3 +1,2 @@
 #!/bin/bash
-./build.sh
-./gradlew publishToMavenLocal uploadArchives -x findbugsMain -x findbugsTest -x checkStyleMain -x checkStyleTest -x test
+./gradlew publishToMavenLocal uploadArchives -PnexusUsername="${SONATYPE_USERNAME}" -PnexusPassword="${SONATYPE_PASSWORD}" -x findbugsMain -x findbugsTest -x checkStyleMain -x checkStyleTest -x test
