@@ -44,6 +44,8 @@ allprojects {
         logbackVersion = '1.2.3'
         slf4jVersion = '1.7.25'
         shiroVersion = '1.4.0'
+        ossrhUsername = project.hasProperty('ossrhUsername') ? project.getProperty('ossrhUsername') : ''
+        ossrhPassword = project.hasProperty('ossrhPassword') ? project.getProperty('ossrhPassword') : ''
     }
 
     repositories {
@@ -116,11 +118,11 @@ allprojects {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                    authentication(userName: ${rootProject.ext.ossrhUsername}, password: ${rootProject.ext.ossrhPassword})
                 }
 
                 snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                    authentication(userName: ${rootProject.ext.ossrhUsername}, password: ${rootProject.ext.ossrhPassword})
                 }
 
                 pom.project {
