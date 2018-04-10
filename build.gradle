@@ -143,7 +143,7 @@ subprojects {
 
 project(':framework-base') {
     dependencies {
-        compile group: 'io.tsdb.services', name: 'framework-common', version: '0.1.1-SNAPSHOT'
+        compile project(':framework-common')
         compile group: 'org.eclipse.jetty', name: 'jetty-server', version: "${rootProject.ext.jettyVersion}"
         compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: "${rootProject.ext.jettyVersion}"
         compile group: 'org.eclipse.jetty', name: 'apache-jsp', version: "${rootProject.ext.jettyVersion}"
