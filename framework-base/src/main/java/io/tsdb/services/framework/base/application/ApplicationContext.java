@@ -6,9 +6,12 @@ import io.tsdb.services.framework.base.guice.BaseServletContextListener;
 import io.tsdb.services.framework.common.configuration.ServiceInfo;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.component.AbstractLifeCycle;
+import org.eclipse.jetty.util.component.LifeCycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
@@ -35,6 +38,11 @@ public final class ApplicationContext extends AbstractApplicationContext {
         initializeInfrastructure();
         configureApplication(ServiceInfo.mainPath, ServiceInfo.mainPort, ServiceInfo.adminPort, ServiceInfo.adminPath);
         initializeGuice(modules);
+    }
+
+    @Override
+    protected void addTracingFilter(final ServletContextHandler context) {
+       // Add the OpenTracing Filter here
     }
 
     /**

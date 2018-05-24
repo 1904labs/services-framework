@@ -1,40 +1,32 @@
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.netflix.nebula:gradle-lint-plugin:latest.release'
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
     }
+}
+
+apply plugin: 'io.codearte.nexus-staging'
+
+
+nexusStaging {
+    username = ossrhUsername
+    password = ossrhPassword
 }
 
 allprojects {
     apply plugin: 'java'
-    apply plugin: 'checkstyle'
-    apply plugin: 'findbugs'
     apply plugin: 'distribution'
-    apply plugin: 'maven'
 
-    apply plugin: 'nebula.lint'
-    gradleLint.rules = ['all-dependency'] // add as many rules here as you'd like
-
-    version = '0.1.1-SNAPSHOT'
+    version = '0.1.2'
     group = 'io.tsdb.services'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    String pomGroup = project.group
-    String pomRepositoryUrl = 'scm:git:https://github.com/inst-tech/services-framework.git'
-    String pomScmUrl = 'https://github.com/inst-tech/services-framework'
-    String pomDescription = 'tsdb.io services framework'
-    String pomLicenseName = 'The Apache License, Version 2.0'
-    String pomLicenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    String pomDeveloperId = 'johann8384'
-    String pomDeveloperEmail = 'jonathan.creasy@gmail.com'
-    String pomDeveloperName = 'Jonathan Creasy'
-
-    String pomName = project.name
     archivesBaseName = project.name
 
     description = 'tsdb.io Services Framework'
@@ -53,59 +45,147 @@ allprojects {
     }
 
     repositories {
-        flatDir {
-            dirs 'libs'
-        }
         mavenLocal()
         jcenter()
         mavenCentral()
-    }
-
-    findbugs {
-        ignoreFailures = true
-        sourceSets=[sourceSets.main]
-        reportsDir = file("$project.buildDir/reports/findbugs")
-        effort = "max"
-    }
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled false
-            html.enabled true
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            credentials {
+                username getSonatypeProperty("username")
+                password getSonatypeProperty("password")
+            }
         }
     }
+}
 
-    checkstyle {
-        configFile = rootProject.file('checkstyle/checkstyle.xml')
-        showViolations = false
-        checkstyleMain.exclude '**/gensrc/**'
-    }
+if (project.hasProperty('test')) {
+    allprojects {
+        apply plugin: 'checkstyle'
+        apply plugin: 'findbugs'
 
-    checkstyleMain {
-        source ='src/main/java'
-    }
+        findbugs {
+            ignoreFailures = true
+            sourceSets = [sourceSets.main]
+            reportsDir = file("$project.buildDir/reports/findbugs")
+            effort = "max"
+        }
 
-    checkstyleTest {
-        source ='src/test/java'
-    }
+        tasks.withType(FindBugs) {
+            reports {
+                xml.enabled false
+                html.enabled true
+            }
+        }
 
-    task('printVersion') {
-        doLast {
-            println project.version
+        checkstyle {
+            configFile = rootProject.file('checkstyle/checkstyle.xml')
+            showViolations = false
+            checkstyleMain.exclude '**/gensrc/**'
+        }
+
+        checkstyleMain {
+            source = 'src/main/java'
+        }
+
+        checkstyleTest {
+            source = 'src/test/java'
         }
     }
+}
 
-    task javadocJar(type: Jar) {
-        classifier = 'javadoc'
-        from javadoc
+if (project.hasProperty('release')) {
+    subprojects {
+        apply plugin: 'signing'
+        apply plugin: 'maven'
+
+        String pomGroup = project.group
+        String pomRepositoryUrl = 'scm:git:https://github.com/inst-tech/services-framework.git'
+        String pomScmUrl = 'https://github.com/inst-tech/services-framework'
+        String pomDescription = 'tsdb.io services framework'
+        String pomLicenseName = 'The Apache License, Version 2.0'
+        String pomLicenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        String pomDeveloperId = 'johann8384'
+        String pomDeveloperEmail = 'jonathan.creasy@gmail.com'
+        String pomDeveloperName = 'Jonathan Creasy'
+        String pomOrgName = 'Instrumentation Technology'
+        String pomOrgUrl = 'https://github.com/inst-tect'
+
+        String pomName = project.name
+
+        task javadocJar(type: Jar) {
+            classifier = 'javadoc'
+            from javadoc
+        }
+
+        task sourcesJar(type: Jar) {
+            classifier = 'sources'
+            from sourceSets.main.allSource
+        }
+
+        artifacts {
+            archives javadocJar, sourcesJar
+        }
+
+        // Signature of artifacts
+        signing {
+            sign configurations.archives
+        }
+
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
+
+                    snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
+
+                    pom.project {
+                        name pomName
+                        description pomDescription
+                        url pomRepositoryUrl
+                        version version
+                        groupId pomGroup
+                        artifactId pomName
+                        packaging 'jar'
+                        scm {
+                            connection pomScmUrl
+                            developerConnection pomScmUrl
+                            url pomScmUrl
+                        }
+                        licenses {
+                            license {
+                                name pomLicenseName
+                                url pomLicenseUrl
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id pomDeveloperId
+                                name pomDeveloperName
+                                email pomDeveloperEmail
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
+}
 
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives javadocJar, sourcesJar
+def getSonatypeProperty(String name) {
+    name = 'ossrh' + name.capitalize()
+    if (project.hasProperty(name)) {
+        return project.getProperties()[name]
+    } else {
+        return ''
     }
 }
 
@@ -127,6 +207,8 @@ task assembleBinary(type: Copy) {
  */
 
 subprojects {
+
+
     task assembleDistBin(dependsOn: assembleBinary, type: Copy) {
         from "${project.buildDir}/install/${project.name}/bin/${project.name}"
         into "${rootProject.buildDir}/install/bin/"
@@ -167,12 +249,6 @@ project(':framework-base') {
         compile group: 'org.apache.shiro', name: 'shiro-crypto-core', version: '1.4.0'
         compile group: 'org.apache.shiro', name: 'shiro-guice', version: "${rootProject.ext.shiroVersion}"
         compile group: 'org.reflections', name: 'reflections', version: '0.9.11'
-        // https://mvnrepository.com/artifact/io.zipkin.brave/brave-http
-        //compile group: 'io.zipkin.brave', name: 'brave-http', version: '4.13.4'
-        // https://mvnrepository.com/artifact/io.zipkin.java/zipkin
-        //compile group: 'io.zipkin.java', name: 'zipkin', version: '2.5.0'
-        // https://mvnrepository.com/artifact/io.zipkin.zipkin2/zipkin-storage-elasticsearch
-        //compile group: 'io.zipkin.zipkin2', name: 'zipkin-storage-elasticsearch', version: '2.5.0'
     }
 }
 
