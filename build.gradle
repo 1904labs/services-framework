@@ -21,7 +21,7 @@ allprojects {
     apply plugin: 'java'
     apply plugin: 'distribution'
 
-    version = '0.1.2'
+    version = '0.1.3'
     group = 'io.tsdb.services'
 
     sourceCompatibility = 1.8
@@ -53,6 +53,14 @@ allprojects {
             credentials {
                 username getSonatypeProperty("username")
                 password getSonatypeProperty("password")
+            }
+        }
+    }
+
+    distributions {
+        main {
+            contents {
+                from jar
             }
         }
     }
@@ -207,7 +215,12 @@ task assembleBinary(type: Copy) {
  */
 
 subprojects {
-
+    jar {
+        exclude "application"
+        exclude 'logback.xml'
+        exclude 'logback-access.xml'
+        exclude "environment.properties"
+    }
 
     task assembleDistBin(dependsOn: assembleBinary, type: Copy) {
         from "${project.buildDir}/install/${project.name}/bin/${project.name}"
@@ -275,3 +288,4 @@ project ('framework-common') {
         testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
     }
 }
+
